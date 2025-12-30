@@ -1,0 +1,110 @@
+<div class="snippet-detail-container">
+  @if (store.isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading snippet...</p>
+    </div>
+  } @else if (store.error()) {
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <h2>Error loading snippet</h2>
+      <p>{{ store.error() }}</p>
+      <a routerLink="/snippets" class="btn-primary">Back to Snippets</a>
+    </div>
+  } @else if (store.selectedSnippet(); as snippet) {
+    <header class="detail-header">
+      <a routerLink="/snippets" class="back-link">
+        ← Back to Snippets
+      </a>
+
+      <div class="header-content">
+        <div class="snippet-meta">
+          <span class="language-badge">
+            <span class="lang-icon">{{ getLanguageIcon(snippet.language) }}</span>
+            {{ getLanguageLabel(snippet.language) }}
+          </span>
+          <time class="snippet-date">
+            {{ formatDate(snippet.createdAt) }}
+          </time>
+        </div>
+
+        <div class="header-actions">
+          <button
+            type="button"
+            class="btn-copy"
+            (click)="copyCode()"
+          >
+            @if (copied()) {
+              ✓ Copied!
+            } @else {
+              Copy Code
+            }
+          </button>
+          <a [routerLink]="['/snippets', snippet.id, 'edit']" class="btn-secondary">
+            Edit
+          </a>
+          <button type="button" class="btn-danger" (click)="confirmDelete()">
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <h1 class="snippet-title">{{ snippet.title }}</h1>
+
+      @if (snippet.description) {
+        <p class="snippet-description">{{ snippet.description }}</p>
+      }
+
+      @if (snippet.tags.length > 0) {
+        <div class="snippet-tags">
+          @for (tag of snippet.tags; track tag) {
+            <span class="tag">{{ tag }}</span>
+          }
+        </div>
+      }
+    </header>
+
+    <section class="code-section">
+      <lib-code-editor
+        [code]="snippet.code"
+        [language]="snippet.language"
+        [readonly]="true"
+        [minHeight]="'400px'"
+      />
+    </section>
+
+    @if (snippet.updatedAt !== snippet.createdAt) {
+      <footer class="snippet-footer">
+        <p class="updated-info">
+          Last updated: {{ formatDate(snippet.updatedAt) }} at {{ formatTime(snippet.updatedAt) }}
+        </p>
+      </footer>
+    }
+  }
+</div>
+
+@if (showDeleteConfirm()) {
+  <div class="modal-overlay" (click)="cancelDelete()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h2>Delete Snippet</h2>
+      <p>Are you sure you want to delete this code snippet? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="cancelDelete()">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn-danger"
+          (click)="deleteSnippet()"
+          [disabled]="store.isLoading()"
+        >
+          @if (store.isLoading()) {
+            Deleting...
+          } @else {
+            Delete Snippet
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}

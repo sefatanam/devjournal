@@ -1,0 +1,32 @@
+<div class="code-editor" [style.min-height]="minHeight()">
+  <div class="editor-header">
+    <span class="language-badge">{{ language() }}</span>
+    @if (!readonly()) {
+      <span class="line-info">{{ lineCount() }} lines</span>
+    }
+  </div>
+
+  <div class="editor-body">
+    <div class="line-numbers">
+      @for (num of lineNumbers(); track num) {
+        <span class="line-number">{{ num }}</span>
+      }
+    </div>
+
+    @if (readonly()) {
+      <pre class="code-display"><code>{{ code() }}</code></pre>
+    } @else {
+      <textarea
+        class="code-input"
+        [value]="code()"
+        [placeholder]="placeholder()"
+        (input)="onCodeChange($any($event.target).value)"
+        (keydown)="onKeyDown($event)"
+        spellcheck="false"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+      ></textarea>
+    }
+  </div>
+</div>

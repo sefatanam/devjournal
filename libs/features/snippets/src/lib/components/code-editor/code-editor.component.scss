@@ -1,0 +1,158 @@
+// Code Editor - Using Global Design Tokens
+// Code editors typically stay dark for readability
+
+.code-editor {
+  display: flex;
+  flex-direction: column;
+  background: #0d1117;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  font-family: var(--font-mono);
+  box-shadow: var(--shadow-lg);
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+
+  .language-badge {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-emerald);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .line-info {
+    font-size: var(--font-size-xs);
+    color: #8b949e;
+  }
+}
+
+.editor-body {
+  display: flex;
+  flex: 1;
+  overflow: auto;
+}
+
+.line-numbers {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-4) 0;
+  background: #0d1117;
+  border-right: 1px solid #21262d;
+  user-select: none;
+
+  .line-number {
+    padding: 0 var(--spacing-3);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    color: #484f58;
+    text-align: right;
+    min-width: 2.5rem;
+  }
+}
+
+.code-input,
+.code-display {
+  flex: 1;
+  margin: 0;
+  padding: var(--spacing-4);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: #e6edf3;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow-x: auto;
+  tab-size: 2;
+}
+
+.code-input {
+  &::placeholder {
+    color: #484f58;
+  }
+
+  &:focus {
+    background: rgba(56, 139, 253, 0.05);
+  }
+}
+
+.code-display {
+  code {
+    font-family: inherit;
+  }
+}
+
+// Scrollbar styling
+.editor-body::-webkit-scrollbar,
+.code-input::-webkit-scrollbar,
+.code-display::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.editor-body::-webkit-scrollbar-track,
+.code-input::-webkit-scrollbar-track,
+.code-display::-webkit-scrollbar-track {
+  background: #0d1117;
+}
+
+.editor-body::-webkit-scrollbar-thumb,
+.code-input::-webkit-scrollbar-thumb,
+.code-display::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: var(--radius-sm);
+}
+
+.editor-body::-webkit-scrollbar-thumb:hover,
+.code-input::-webkit-scrollbar-thumb:hover,
+.code-display::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}
+
+// Syntax highlighting colors (GitHub Dark theme compatible)
+.hljs-comment,
+.hljs-quote {
+  color: #8b949e;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag {
+  color: #ff7b72;
+}
+
+.hljs-string,
+.hljs-attr {
+  color: #a5d6ff;
+}
+
+.hljs-number,
+.hljs-literal {
+  color: #79c0ff;
+}
+
+.hljs-function,
+.hljs-title {
+  color: #d2a8ff;
+}
+
+.hljs-variable,
+.hljs-name {
+  color: #ffa657;
+}
+
+.hljs-type,
+.hljs-class {
+  color: #7ee787;
+}

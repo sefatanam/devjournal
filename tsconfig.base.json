@@ -14,7 +14,17 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@devjournal/shared-models": ["libs/shared/models/src/index.ts"],
+      "@devjournal/feature-auth": ["libs/features/auth/src/index.ts"],
+      "@devjournal/data-access-api": ["libs/data-access/api/src/index.ts"],
+      "@devjournal/feature-journal": ["libs/features/journal/src/index.ts"],
+      "@devjournal/feature-snippets": ["libs/features/snippets/src/index.ts"],
+      "@devjournal/shared-proto": ["libs/shared/proto/src/index.ts"],
+      "@devjournal/features-chat": ["libs/features/chat/src/index.ts"],
+      "@devjournal/features-progress": ["libs/features/progress/src/index.ts"],
+      "@devjournal/shared-ui": ["libs/shared/ui/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

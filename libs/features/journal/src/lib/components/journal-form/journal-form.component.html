@@ -1,0 +1,122 @@
+<div class="journal-form-container">
+  <header class="form-header">
+    <a routerLink="/journal" class="back-link">
+      ← Back to Journal
+    </a>
+    <h1>{{ pageTitle() }}</h1>
+  </header>
+
+  @if (store.error()) {
+    <div class="error-banner">
+      {{ store.error() }}
+      <button type="button" (click)="store.clearError()">&times;</button>
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="entry-form">
+    <div class="form-group">
+      <label for="title" class="form-label">Title</label>
+      <input
+        type="text"
+        id="title"
+        formControlName="title"
+        class="form-input"
+        [class.error]="form.get('title')?.invalid && form.get('title')?.touched"
+        placeholder="What did you learn today?"
+      />
+      @if (form.get('title')?.invalid && form.get('title')?.touched) {
+        <span class="error-text">{{ titleError }}</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">How are you feeling?</label>
+      <div class="mood-selector">
+        @for (mood of moods; track mood.value) {
+          <label
+            class="mood-option"
+            [class.selected]="form.get('mood')?.value === mood.value"
+          >
+            <input
+              type="radio"
+              formControlName="mood"
+              [value]="mood.value"
+              class="sr-only"
+            />
+            <span class="mood-emoji">{{ mood.emoji }}</span>
+            <span class="mood-label">{{ mood.label }}</span>
+          </label>
+        }
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="content" class="form-label">Content</label>
+      <textarea
+        id="content"
+        formControlName="content"
+        class="form-textarea"
+        [class.error]="form.get('content')?.invalid && form.get('content')?.touched"
+        placeholder="Write about your learning experience, challenges, and insights..."
+        rows="12"
+      ></textarea>
+      @if (form.get('content')?.invalid && form.get('content')?.touched) {
+        <span class="error-text">{{ contentError }}</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="tags" class="form-label">Tags</label>
+      <div class="tags-input-container">
+        <div class="tags-display">
+          @for (tag of currentTags; track tag) {
+            <span class="tag">
+              {{ tag }}
+              <button
+                type="button"
+                class="tag-remove"
+                (click)="removeTag(tag)"
+              >
+                &times;
+              </button>
+            </span>
+          }
+        </div>
+        <input
+          type="text"
+          id="tags"
+          class="form-input"
+          placeholder="Add tags (press Enter or comma)"
+          [value]="tagInput()"
+          (input)="tagInput.set($any($event.target).value)"
+          (keydown)="onTagKeydown($event)"
+          (blur)="addTag()"
+        />
+      </div>
+      <span class="form-hint">Separate tags with Enter or comma</span>
+    </div>
+
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="onCancel()"
+        [disabled]="store.isLoading()"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="store.isLoading()"
+      >
+        @if (store.isLoading()) {
+          <span class="spinner"></span>
+          Saving...
+        } @else {
+          {{ isEditMode() ? 'Update Entry' : 'Create Entry' }}
+        }
+      </button>
+    </div>
+  </form>
+</div>

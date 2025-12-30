@@ -1,0 +1,76 @@
+<div class="login-container">
+  <div class="login-card">
+    <h1 class="login-title">Welcome Back</h1>
+    <p class="login-subtitle">Sign in to continue to DevJournal</p>
+
+    @if (authStore.error()) {
+      <div class="error-alert">
+        {{ authStore.error() }}
+        <button type="button" class="close-btn" (click)="authStore.clearError()">
+          &times;
+        </button>
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="email" class="form-label">Email</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-input"
+          [class.error]="form.get('email')?.invalid && form.get('email')?.touched"
+          placeholder="Enter your email"
+          autocomplete="email"
+        />
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <span class="error-text">{{ emailError }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <div class="password-input-wrapper">
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            class="form-input"
+            [class.error]="form.get('password')?.invalid && form.get('password')?.touched"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="togglePasswordVisibility()"
+          >
+            {{ showPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        @if (form.get('password')?.invalid && form.get('password')?.touched) {
+          <span class="error-text">{{ passwordError }}</span>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="submit-btn"
+        [disabled]="authStore.isLoading()"
+      >
+        @if (authStore.isLoading()) {
+          <span class="spinner"></span>
+          Signing in...
+        } @else {
+          Sign In
+        }
+      </button>
+    </form>
+
+    <p class="register-link">
+      Don't have an account?
+      <a routerLink="/register">Create one</a>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,124 @@
+<div class="snippet-list-container">
+  <header class="list-header">
+    <div class="header-content">
+      <h1>Code Snippets</h1>
+      <a routerLink="/snippets/new" class="btn-primary">
+        <span class="btn-icon">+</span>
+        New Snippet
+      </a>
+    </div>
+
+    <div class="filters">
+      <div class="search-box">
+        <input
+          type="text"
+          placeholder="Search snippets..."
+          [value]="searchQuery()"
+          (input)="onSearch($any($event.target).value)"
+          class="search-input"
+        />
+      </div>
+
+      <div class="language-filter">
+        <select
+          class="filter-select"
+          [value]="selectedLanguage()"
+          (change)="onLanguageFilter($any($event.target).value)"
+        >
+          <option value="">All Languages</option>
+          @for (lang of languages; track lang.value) {
+            <option [value]="lang.value">
+              {{ lang.icon }} {{ lang.label }}
+            </option>
+          }
+        </select>
+      </div>
+    </div>
+  </header>
+
+  @if (store.error()) {
+    <div class="error-banner">
+      {{ store.error() }}
+      <button type="button" (click)="store.clearError()">&times;</button>
+    </div>
+  }
+
+  <main class="list-content">
+    @if (store.isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading snippets...</p>
+      </div>
+    } @else if (!store.hasSnippets()) {
+      <div class="empty-state">
+        <div class="empty-icon">💻</div>
+        <h2>No snippets yet</h2>
+        <p>Save your code snippets for quick reference!</p>
+        <a routerLink="/snippets/new" class="btn-primary">Create Your First Snippet</a>
+      </div>
+    } @else {
+      <div class="snippets-grid">
+        @for (snippet of store.entities(); track snippet.id) {
+          <article class="snippet-card">
+            <a [routerLink]="['/snippets', snippet.id]" class="snippet-link">
+              <div class="snippet-header">
+                <span class="language-badge">
+                  <span class="lang-icon">{{ getLanguageIcon(snippet.language) }}</span>
+                  {{ getLanguageLabel(snippet.language) }}
+                </span>
+                <time class="snippet-date">{{ formatDate(snippet.createdAt) }}</time>
+              </div>
+
+              <h2 class="snippet-title">{{ snippet.title }}</h2>
+
+              @if (snippet.description) {
+                <p class="snippet-description">{{ snippet.description }}</p>
+              }
+
+              <div class="code-preview">
+                <pre><code>{{ truncateCode(snippet.code) }}</code></pre>
+              </div>
+
+              @if (snippet.tags.length > 0) {
+                <div class="snippet-tags">
+                  @for (tag of snippet.tags.slice(0, 4); track tag) {
+                    <span class="tag">{{ tag }}</span>
+                  }
+                  @if (snippet.tags.length > 4) {
+                    <span class="tag-more">+{{ snippet.tags.length - 4 }}</span>
+                  }
+                </div>
+              }
+            </a>
+          </article>
+        }
+      </div>
+
+      @if (store.totalPages() > 1) {
+        <nav class="pagination">
+          <button
+            type="button"
+            class="page-btn"
+            [disabled]="store.currentPage() === 1"
+            (click)="onPageChange(store.currentPage() - 1)"
+          >
+            Previous
+          </button>
+
+          <span class="page-info">
+            Page {{ store.currentPage() }} of {{ store.totalPages() }}
+          </span>
+
+          <button
+            type="button"
+            class="page-btn"
+            [disabled]="store.currentPage() === store.totalPages()"
+            (click)="onPageChange(store.currentPage() + 1)"
+          >
+            Next
+          </button>
+        </nav>
+      }
+    }
+  </main>
+</div>

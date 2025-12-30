@@ -1,0 +1,108 @@
+# @REVIEW: Docker Compose - Single Source of Truth for local development
+# All ports and URLs are configured here and passed to services via env vars
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: devjournal-postgres
+    environment:
+      POSTGRES_USER: devjournal
+      POSTGRES_PASSWORD: devjournal_secret
+      POSTGRES_DB: devjournal
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../services/go-api/internal/database/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U devjournal']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devjournal-network
+
+  # MongoDB Database
+  mongodb:
+    image: mongo:7
+    container_name: devjournal-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: devjournal
+      MONGO_INITDB_ROOT_PASSWORD: devjournal_secret
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devjournal-network
+
+  # Go API Server
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.Backend
+    container_name: devjournal-api
+    environment:
+      - PORT=8080
+      - GRPC_PORT=8081
+      - DB_URL=postgres://devjournal:devjournal_secret@postgres:5432/devjournal?sslmode=disable
+      - MONGO_URL=mongodb://devjournal:devjournal_secret@mongodb:27017
+      - MONGO_DB=devjournal
+      - JWT_SECRET=your-secret-key-change-in-production
+    ports:
+      - '8080:8080'
+      - '8081:8081'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    networks:
+      - devjournal-network
+
+  # Envoy Proxy for gRPC-Web
+  envoy:
+    image: envoyproxy/envoy:v1.28-latest
+    container_name: devjournal-envoy
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
+    ports:
+      - '9090:9090'
+      - '9901:9901'
+    depends_on:
+      - api
+    networks:
+      - devjournal-network
+
+  # Angular Frontend (SSR with Node.js)
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.Frontend
+    container_name: devjournal-web
+    environment:
+      # Single Source of Truth - API URL passed to SSR server
+      - PORT=4000
+      - API_URL=http://api:8080
+      - GRPC_URL=http://envoy:9090
+    ports:
+      - '4200:4000'
+    depends_on:
+      - api
+      - envoy
+    networks:
+      - devjournal-network
+
+volumes:
+  postgres_data:
+  mongodb_data:
+
+networks:
+  devjournal-network:
+    driver: bridge
