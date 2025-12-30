@@ -1,0 +1,65 @@
+// Chat Page - Using Global Design Tokens
+
+.chat-page {
+  height: calc(100vh - 140px);
+  max-width: 900px;
+  margin: 0 auto;
+  margin-top: var(--spacing-4);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+
+  @media (min-width: 768px) {
+    margin-top: 100px;
+    height: calc(100vh - 180px);
+  }
+}
+
+.btn-back-float {
+  position: absolute;
+  top: var(--spacing-4);
+  left: var(--spacing-4);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-text);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  z-index: 10;
+  transition: var(--transition-all);
+  box-shadow: 0 2px 12px var(--color-primary-glow);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px var(--color-primary-glow);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .chat-page {
+    height: calc(100vh - 160px);
+    margin: var(--spacing-4);
+    margin-bottom: 100px;
+    border-radius: var(--radius-xl);
+  }
+
+  .btn-back-float {
+    top: var(--spacing-3);
+    left: var(--spacing-3);
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-xs);
+  }
+}

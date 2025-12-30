@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package devjournal.v1;
+
+option go_package = "devjournal/proto/devjournal/v1;devjournalv1";
+
+import "google/protobuf/timestamp.proto";
+
+// ProgressService provides learning progress tracking
+service ProgressService {
+  // GetSummary retrieves the overall progress summary
+  rpc GetSummary(GetSummaryRequest) returns (ProgressSummary);
+
+  // GetTodayProgress retrieves today's progress
+  rpc GetTodayProgress(GetTodayProgressRequest) returns (DailyProgress);
+
+  // GetWeeklyProgress retrieves the last 7 days of progress
+  rpc GetWeeklyProgress(GetWeeklyProgressRequest) returns (ProgressList);
+
+  // GetMonthlyProgress retrieves the last 30 days of progress
+  rpc GetMonthlyProgress(GetMonthlyProgressRequest) returns (ProgressList);
+
+  // GetStreak retrieves the current learning streak
+  rpc GetStreak(GetStreakRequest) returns (StreakResponse);
+}
+
+// DailyProgress represents learning progress for a single day
+message DailyProgress {
+  string id = 1;
+  string user_id = 2;
+  google.protobuf.Timestamp date = 3;
+  int32 entries_count = 4;
+  int32 snippets_count = 5;
+  int32 streak_days = 6;
+  int32 total_learning_time = 7; // in minutes
+}
+
+// ProgressSummary provides an overview of learning progress
+message ProgressSummary {
+  int32 current_streak = 1;
+  int32 longest_streak = 2;
+  int32 total_entries = 3;
+  int32 total_snippets = 4;
+  int32 total_learning_time = 5; // in minutes
+  int32 this_week_entries = 6;
+  int32 this_month_entries = 7;
+}
+
+// ProgressList contains a list of daily progress records
+message ProgressList {
+  repeated DailyProgress progress = 1;
+}
+
+// StreakResponse contains streak information
+message StreakResponse {
+  int32 current_streak = 1;
+  int32 longest_streak = 2;
+  google.protobuf.Timestamp last_activity = 3;
+}
+
+// Request messages
+message GetSummaryRequest {}
+message GetTodayProgressRequest {}
+message GetWeeklyProgressRequest {}
+message GetMonthlyProgressRequest {}
+message GetStreakRequest {}

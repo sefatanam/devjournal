@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package devjournal.v1;
+
+option go_package = "devjournal/proto/devjournal/v1;devjournalv1";
+
+import "google/protobuf/timestamp.proto";
+
+// AuthService handles user authentication
+service AuthService {
+  // Register creates a new user account
+  rpc Register(RegisterRequest) returns (AuthResponse);
+
+  // Login authenticates a user and returns a token
+  rpc Login(LoginRequest) returns (AuthResponse);
+
+  // ValidateToken validates a JWT token
+  rpc ValidateToken(ValidateTokenRequest) returns (User);
+
+  // GetProfile retrieves the current user's profile
+  rpc GetProfile(GetProfileRequest) returns (User);
+
+  // UpdateProfile updates the current user's profile
+  rpc UpdateProfile(UpdateProfileRequest) returns (User);
+}
+
+// User represents a user in the system
+message User {
+  string id = 1;
+  string email = 2;
+  string display_name = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+}
+
+// RegisterRequest is the request to register a new user
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+  string display_name = 3;
+}
+
+// LoginRequest is the request to login
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+// AuthResponse is the response containing the auth token and user
+message AuthResponse {
+  string token = 1;
+  User user = 2;
+}
+
+// ValidateTokenRequest is the request to validate a token
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+// GetProfileRequest is the request to get the current user's profile
+message GetProfileRequest {}
+
+// UpdateProfileRequest is the request to update the user's profile
+message UpdateProfileRequest {
+  string display_name = 1;
+}

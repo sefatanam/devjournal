@@ -1,13 +1,20 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { NxWelcome } from './nx-welcome';
+import { RouterOutlet } from '@angular/router';
+import { FloatingNavComponent } from '@devjournal/shared-ui';
 
 @Component({
-  imports: [NxWelcome, RouterModule],
   selector: 'app-root',
-  templateUrl: './app.html',
-  styleUrl: './app.scss',
+  imports: [RouterOutlet, FloatingNavComponent],
+  template: `
+    <router-outlet />
+    <ui-floating-nav />
+  `,
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
 })
-export class App {
-  protected title = 'web';
-}
+export class App {}

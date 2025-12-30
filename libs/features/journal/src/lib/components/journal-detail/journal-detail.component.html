@@ -1,0 +1,92 @@
+<div class="journal-detail-container">
+  @if (store.isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading entry...</p>
+    </div>
+  } @else if (store.error()) {
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <h2>Error loading entry</h2>
+      <p>{{ store.error() }}</p>
+      <a routerLink="/journal" class="btn-primary">Back to Journal</a>
+    </div>
+  } @else if (store.selectedEntry(); as entry) {
+    <header class="detail-header">
+      <a routerLink="/journal" class="back-link">
+        ← Back to Journal
+      </a>
+
+      <div class="header-content">
+        <div class="entry-meta">
+          <span class="mood-badge">
+            <span class="mood-emoji">{{ getMoodEmoji(entry.mood) }}</span>
+            {{ getMoodLabel(entry.mood) }}
+          </span>
+          <time class="entry-date">
+            {{ formatDate(entry.createdAt) }} at {{ formatTime(entry.createdAt) }}
+          </time>
+        </div>
+
+        <div class="header-actions">
+          <a [routerLink]="['/journal', entry.id, 'edit']" class="btn-secondary">
+            Edit
+          </a>
+          <button type="button" class="btn-danger" (click)="confirmDelete()">
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <h1 class="entry-title">{{ entry.title }}</h1>
+
+      @if (entry.tags.length > 0) {
+        <div class="entry-tags">
+          @for (tag of entry.tags; track tag) {
+            <span class="tag">{{ tag }}</span>
+          }
+        </div>
+      }
+    </header>
+
+    <article class="entry-content">
+      <div class="content-body">
+        {{ entry.content }}
+      </div>
+    </article>
+
+    @if (entry.updatedAt !== entry.createdAt) {
+      <footer class="entry-footer">
+        <p class="updated-info">
+          Last updated: {{ formatDate(entry.updatedAt) }} at {{ formatTime(entry.updatedAt) }}
+        </p>
+      </footer>
+    }
+  }
+</div>
+
+@if (showDeleteConfirm()) {
+  <div class="modal-overlay" (click)="cancelDelete()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h2>Delete Entry</h2>
+      <p>Are you sure you want to delete this journal entry? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="cancelDelete()">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn-danger"
+          (click)="deleteEntry()"
+          [disabled]="store.isLoading()"
+        >
+          @if (store.isLoading()) {
+            Deleting...
+          } @else {
+            Delete Entry
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}

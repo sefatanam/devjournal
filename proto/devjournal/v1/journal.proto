@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package devjournal.v1;
+
+option go_package = "devjournal/proto/devjournal/v1;devjournalv1";
+
+import "google/protobuf/timestamp.proto";
+
+// JournalService provides CRUD operations for journal entries
+service JournalService {
+  // CreateEntry creates a new journal entry
+  rpc CreateEntry(CreateEntryRequest) returns (JournalEntry);
+
+  // GetEntry retrieves a single journal entry by ID
+  rpc GetEntry(GetEntryRequest) returns (JournalEntry);
+
+  // ListEntries retrieves a paginated list of journal entries
+  rpc ListEntries(ListEntriesRequest) returns (ListEntriesResponse);
+
+  // UpdateEntry updates an existing journal entry
+  rpc UpdateEntry(UpdateEntryRequest) returns (JournalEntry);
+
+  // DeleteEntry removes a journal entry
+  rpc DeleteEntry(DeleteEntryRequest) returns (DeleteEntryResponse);
+
+  // SearchEntries searches journal entries by title or content
+  rpc SearchEntries(SearchEntriesRequest) returns (ListEntriesResponse);
+}
+
+// JournalEntry represents a learning journal entry
+message JournalEntry {
+  string id = 1;
+  string user_id = 2;
+  string title = 3;
+  string content = 4;
+  string mood = 5; // excited, productive, frustrated, confused, accomplished
+  repeated string tags = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+// CreateEntryRequest is the request to create a new entry
+message CreateEntryRequest {
+  string title = 1;
+  string content = 2;
+  string mood = 3;
+  repeated string tags = 4;
+}
+
+// GetEntryRequest is the request to retrieve an entry
+message GetEntryRequest {
+  string id = 1;
+}
+
+// ListEntriesRequest is the request to list entries with pagination
+message ListEntriesRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+  string mood = 3; // Optional filter by mood
+}
+
+// ListEntriesResponse is the response containing a list of entries
+message ListEntriesResponse {
+  repeated JournalEntry entries = 1;
+  int32 total_count = 2;
+}
+
+// UpdateEntryRequest is the request to update an entry
+message UpdateEntryRequest {
+  string id = 1;
+  string title = 2;
+  string content = 3;
+  string mood = 4;
+  repeated string tags = 5;
+}
+
+// DeleteEntryRequest is the request to delete an entry
+message DeleteEntryRequest {
+  string id = 1;
+}
+
+// DeleteEntryResponse is the response after deleting an entry
+message DeleteEntryResponse {
+  bool success = 1;
+}
+
+// SearchEntriesRequest is the request to search entries
+message SearchEntriesRequest {
+  string query = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}

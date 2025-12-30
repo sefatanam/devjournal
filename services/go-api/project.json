@@ -1,0 +1,60 @@
+{
+  "name": "go-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "root": "services/go-api",
+  "sourceRoot": "services/go-api",
+  "projectType": "application",
+  "tags": ["type:backend", "scope:api", "lang:go"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go build -o dist/server ./cmd/api",
+        "cwd": "{projectRoot}"
+      },
+      "outputs": ["{projectRoot}/dist"],
+      "inputs": [
+        "{projectRoot}/**/*.go",
+        "{projectRoot}/go.mod",
+        "{projectRoot}/go.sum"
+      ]
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go run ./cmd/api/main.go",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go test -v ./...",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "golangci-lint run ./...",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "generate-proto": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "buf generate",
+        "cwd": "proto"
+      },
+      "inputs": ["proto/**/*.proto"],
+      "outputs": ["{projectRoot}/proto"]
+    },
+    "docker-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker build -f docker/Dockerfile.api -t devjournal-api .",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

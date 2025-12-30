@@ -1,0 +1,38 @@
+version: v2
+managed:
+  enabled: true
+  override:
+    - file_option: go_package_prefix
+      value: devjournal/proto
+plugins:
+  # Go protobuf messages
+  - remote: buf.build/protocolbuffers/go
+    out: ../services/go-api/proto
+    opt:
+      - paths=source_relative
+
+  # Go gRPC services
+  - remote: buf.build/grpc/go
+    out: ../services/go-api/proto
+    opt:
+      - paths=source_relative
+
+  # Go Connect RPC (for gRPC-Web support)
+  - remote: buf.build/connectrpc/go
+    out: ../services/go-api/proto
+    opt:
+      - paths=source_relative
+
+  # TypeScript protobuf messages (using protoc-gen-es)
+  - local: protoc-gen-es
+    out: ../libs/shared/proto/src/lib
+    opt:
+      - target=ts
+      - import_extension=js
+
+  # TypeScript Connect RPC client
+  - remote: buf.build/connectrpc/es
+    out: ../libs/shared/proto/src/lib
+    opt:
+      - target=ts
+      - import_extension=js

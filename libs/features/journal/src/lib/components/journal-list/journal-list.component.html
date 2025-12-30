@@ -1,0 +1,115 @@
+<div class="journal-list-container">
+  <header class="list-header">
+    <div class="header-content">
+      <h1>Journal Entries</h1>
+      <a routerLink="/journal/new" class="btn-primary">
+        <span class="btn-icon">+</span>
+        New Entry
+      </a>
+    </div>
+
+    <div class="filters">
+      <div class="search-box">
+        <input
+          type="text"
+          placeholder="Search entries..."
+          [value]="searchQuery()"
+          (input)="onSearch($any($event.target).value)"
+          class="search-input"
+        />
+      </div>
+
+      <div class="mood-filter">
+        @for (mood of moods; track mood.value) {
+          <button
+            type="button"
+            class="mood-btn"
+            [class.active]="selectedMood() === mood.value"
+            (click)="onMoodFilter(mood.value)"
+          >
+            <span class="mood-emoji">{{ mood.emoji }}</span>
+            <span class="mood-label">{{ mood.label }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  </header>
+
+  @if (store.error()) {
+    <div class="error-banner">
+      {{ store.error() }}
+      <button type="button" (click)="store.clearError()">&times;</button>
+    </div>
+  }
+
+  <main class="list-content">
+    @if (store.isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading entries...</p>
+      </div>
+    } @else if (!store.hasEntries()) {
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <h2>No entries yet</h2>
+        <p>Start documenting your learning journey today!</p>
+        <a routerLink="/journal/new" class="btn-primary">Create Your First Entry</a>
+      </div>
+    } @else {
+      <div class="entries-grid">
+        @for (entry of store.entities(); track entry.id) {
+          <article class="entry-card">
+            <a [routerLink]="['/journal', entry.id]" class="entry-link">
+              <div class="entry-header">
+                <span class="entry-mood" [title]="entry.mood">
+                  {{ getMoodEmoji(entry.mood) }}
+                </span>
+                <time class="entry-date">{{ formatDate(entry.createdAt) }}</time>
+              </div>
+
+              <h2 class="entry-title">{{ entry.title }}</h2>
+              <p class="entry-excerpt">{{ truncateContent(entry.content) }}</p>
+
+              @if (entry.tags.length > 0) {
+                <div class="entry-tags">
+                  @for (tag of entry.tags.slice(0, 3); track tag) {
+                    <span class="tag">{{ tag }}</span>
+                  }
+                  @if (entry.tags.length > 3) {
+                    <span class="tag-more">+{{ entry.tags.length - 3 }}</span>
+                  }
+                </div>
+              }
+            </a>
+          </article>
+        }
+      </div>
+
+      @if (store.totalPages() > 1) {
+        <nav class="pagination">
+          <button
+            type="button"
+            class="page-btn"
+            [disabled]="store.currentPage() === 1"
+            (click)="onPageChange(store.currentPage() - 1)"
+          >
+            Previous
+          </button>
+
+          <span class="page-info">
+            Page {{ store.currentPage() }} of {{ store.totalPages() }}
+          </span>
+
+          <button
+            type="button"
+            class="page-btn"
+            [disabled]="store.currentPage() === store.totalPages()"
+            (click)="onPageChange(store.currentPage() + 1)"
+          >
+            Next
+          </button>
+        </nav>
+      }
+    }
+  </main>
+</div>

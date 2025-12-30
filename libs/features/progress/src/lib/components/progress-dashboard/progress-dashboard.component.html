@@ -1,0 +1,138 @@
+<div class="progress-dashboard">
+  <!-- Loading State -->
+  @if (store.isLoading()) {
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading your progress...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (store.error()) {
+    <div class="error-banner">
+      <span class="error-icon">!</span>
+      <p>{{ store.error() }}</p>
+      <button (click)="store.clearError()" class="dismiss-btn">Dismiss</button>
+    </div>
+  }
+
+  <!-- Dashboard Content -->
+  @if (store.hasData() && !store.isLoading()) {
+    <!-- Streak Card -->
+    <div class="streak-card">
+      <div class="streak-icon">
+        @if (store.currentStreak() > 0) {
+          <span class="fire">🔥</span>
+        } @else {
+          <span class="ice">❄️</span>
+        }
+      </div>
+      <div class="streak-content">
+        <h2 class="streak-number">{{ store.currentStreak() }}</h2>
+        <p class="streak-label">Day Streak</p>
+      </div>
+      @if (store.isActiveToday()) {
+        <span class="active-badge">Active Today!</span>
+      }
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <!-- Today's Activity -->
+      <div class="stat-card today">
+        <h3>Today</h3>
+        <div class="stat-row">
+          <span class="stat-label">Entries</span>
+          <span class="stat-value">{{ store.todayProgress()?.entriesCount ?? 0 }}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Snippets</span>
+          <span class="stat-value">{{ store.todayProgress()?.snippetsCount ?? 0 }}</span>
+        </div>
+        <div class="stat-row total">
+          <span class="stat-label">Total Activity</span>
+          <span class="stat-value">{{ store.todayTotal() }}</span>
+        </div>
+      </div>
+
+      <!-- This Week -->
+      <div class="stat-card week">
+        <h3>This Week</h3>
+        <div class="stat-row">
+          <span class="stat-label">Entries</span>
+          <span class="stat-value">{{ store.weeklyTotals().entries }}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Snippets</span>
+          <span class="stat-value">{{ store.weeklyTotals().snippets }}</span>
+        </div>
+        <div class="stat-row total">
+          <span class="stat-label">Active Days</span>
+          <span class="stat-value">{{ store.weeklyTotals().activeDays }}/7</span>
+        </div>
+      </div>
+
+      <!-- Summary Stats -->
+      <div class="stat-card summary">
+        <h3>All Time</h3>
+        <div class="stat-row">
+          <span class="stat-label">Total Entries</span>
+          <span class="stat-value">{{ store.summary()?.totalEntries ?? 0 }}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Total Snippets</span>
+          <span class="stat-value">{{ store.summary()?.totalSnippets ?? 0 }}</span>
+        </div>
+        <div class="stat-row total">
+          <span class="stat-label">Longest Streak</span>
+          <span class="stat-value">{{ store.summary()?.longestStreak ?? 0 }} days</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Activity Chart -->
+    <div class="activity-section">
+      <h3>Weekly Activity</h3>
+      <div class="activity-chart">
+        @for (day of store.weeklyChartData(); track day.date) {
+          <div class="activity-day">
+            <div 
+              class="activity-bar" 
+              [style.height.%]="day.total > 0 ? Math.min(day.total * 20, 100) : 5"
+              [class.active]="day.total > 0"
+              [attr.title]="day.entries + ' entries, ' + day.snippets + ' snippets'"
+            >
+              <span class="activity-count">{{ day.total }}</span>
+            </div>
+            <span class="day-label">{{ day.date | date:'EEE' }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <a routerLink="/journal/new" class="action-btn primary">
+        <span class="action-icon">📝</span>
+        New Entry
+      </a>
+      <a routerLink="/snippets/new" class="action-btn secondary">
+        <span class="action-icon">💾</span>
+        New Snippet
+      </a>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!store.hasData() && !store.isLoading() && !store.error()) {
+    <div class="empty-state">
+      <div class="empty-icon">📊</div>
+      <h2>No Progress Data Yet</h2>
+      <p>Start your learning journey by creating your first journal entry or code snippet!</p>
+      <div class="empty-actions">
+        <a routerLink="/journal/new" class="action-btn primary">Create Entry</a>
+        <a routerLink="/snippets/new" class="action-btn secondary">Create Snippet</a>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,127 @@
+<div class="snippet-form-container">
+  <header class="form-header">
+    <a routerLink="/snippets" class="back-link">
+      ← Back to Snippets
+    </a>
+    <h1>{{ pageTitle() }}</h1>
+  </header>
+
+  @if (store.error()) {
+    <div class="error-banner">
+      {{ store.error() }}
+      <button type="button" (click)="store.clearError()">&times;</button>
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="snippet-form">
+    <div class="form-row">
+      <div class="form-group flex-2">
+        <label for="title" class="form-label">Title</label>
+        <input
+          type="text"
+          id="title"
+          formControlName="title"
+          class="form-input"
+          [class.error]="form.get('title')?.invalid && form.get('title')?.touched"
+          placeholder="e.g., TypeScript Array Filter Pattern"
+        />
+        @if (form.get('title')?.invalid && form.get('title')?.touched) {
+          <span class="error-text">{{ titleError }}</span>
+        }
+      </div>
+
+      <div class="form-group flex-1">
+        <label for="language" class="form-label">Language</label>
+        <select id="language" formControlName="language" class="form-select">
+          @for (lang of languages; track lang.value) {
+            <option [value]="lang.value">
+              {{ lang.icon }} {{ lang.label }}
+            </option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description" class="form-label">Description (optional)</label>
+      <textarea
+        id="description"
+        formControlName="description"
+        class="form-textarea"
+        placeholder="Briefly describe what this snippet does..."
+        rows="2"
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        Code
+        @if (form.get('code')?.invalid && form.get('code')?.touched) {
+          <span class="error-text inline">- {{ codeError }}</span>
+        }
+      </label>
+      <lib-code-editor
+        [code]="codeContent()"
+        [language]="selectedLanguage"
+        [readonly]="false"
+        [minHeight]="'350px'"
+        placeholder="Paste or write your code here..."
+        (codeChange)="onCodeChange($event)"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="tags" class="form-label">Tags</label>
+      <div class="tags-input-container">
+        <div class="tags-display">
+          @for (tag of currentTags; track tag) {
+            <span class="tag">
+              {{ tag }}
+              <button
+                type="button"
+                class="tag-remove"
+                (click)="removeTag(tag)"
+              >
+                &times;
+              </button>
+            </span>
+          }
+        </div>
+        <input
+          type="text"
+          id="tags"
+          class="form-input"
+          placeholder="Add tags (press Enter or comma)"
+          [value]="tagInput()"
+          (input)="tagInput.set($any($event.target).value)"
+          (keydown)="onTagKeydown($event)"
+          (blur)="addTag()"
+        />
+      </div>
+      <span class="form-hint">e.g., angular, typescript, patterns</span>
+    </div>
+
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="onCancel()"
+        [disabled]="store.isLoading()"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="store.isLoading()"
+      >
+        @if (store.isLoading()) {
+          <span class="spinner"></span>
+          Saving...
+        } @else {
+          {{ isEditMode() ? 'Update Snippet' : 'Save Snippet' }}
+        }
+      </button>
+    </div>
+  </form>
+</div>

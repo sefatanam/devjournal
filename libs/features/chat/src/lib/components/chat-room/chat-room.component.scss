@@ -1,0 +1,262 @@
+// Chat Room - Using Global Design Tokens
+
+.chat-room {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+
+.room-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+  padding-left: var(--spacing-6);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+
+  // Add top padding on mobile to avoid floating back button overlap
+  @media (max-width: 768px) {
+    padding-top: calc(var(--spacing-4) + 40px);
+  }
+
+  @media (min-width: 769px) {
+    padding-top: calc(var(--spacing-4) + 44px);
+  }
+}
+
+.btn-back {
+  // Hidden - parent component handles back navigation with floating button
+  display: none;
+}
+
+.room-info {
+  flex: 1;
+
+  h2 {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text);
+  }
+}
+
+.connection-status {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-medium);
+
+  &.connected {
+    background: rgba(0, 255, 136, 0.15);
+    color: var(--color-emerald);
+  }
+
+  &.connecting {
+    background: rgba(255, 184, 0, 0.15);
+    color: var(--color-amber);
+  }
+
+  &.disconnected,
+  &.error {
+    background: var(--color-error-bg);
+    color: var(--color-error);
+  }
+}
+
+.member-count {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-dim);
+}
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.empty-messages {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+}
+
+.message {
+  max-width: 70%;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  animation: fadeIn 0.2s var(--ease-out-expo);
+
+  &.own {
+    align-self: flex-end;
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-primary-text);
+
+    .message-author {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .message-time {
+      color: rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  &.system {
+    align-self: center;
+    max-width: 100%;
+    background: transparent;
+    border: none;
+    padding: var(--spacing-1);
+  }
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-1);
+}
+
+.message-author {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.message-time {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-dim);
+}
+
+.message-content {
+  word-wrap: break-word;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.system-message {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-dim);
+  font-style: italic;
+}
+
+.message-input-container {
+  display: flex;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+  position: relative;
+}
+
+.connecting-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--color-bg-elevated);
+  opacity: 0.95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-3);
+  z-index: 1;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.btn-retry {
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: var(--transition-all);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 12px var(--color-primary-glow);
+  }
+}
+
+.message-input {
+  flex: 1;
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  background: var(--color-bg-card);
+  transition: var(--transition-all);
+
+  &::placeholder {
+    color: var(--color-text-dim);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-glow);
+  }
+
+  &:disabled {
+    background: var(--color-surface);
+    cursor: not-allowed;
+  }
+}
+
+.btn-send {
+  padding: var(--spacing-3) var(--spacing-6);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: var(--transition-all);
+  box-shadow: 0 2px 12px var(--color-primary-glow);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px var(--color-primary-glow);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

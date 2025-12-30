@@ -1,0 +1,270 @@
+<div class="landing">
+  <!-- Ambient Background -->
+  <div class="ambient-bg">
+    <div class="grid-pattern"></div>
+    <div class="glow glow--cyan"></div>
+    <div class="glow glow--amber"></div>
+    <div class="noise-overlay"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav__container">
+      <a class="nav__logo" routerLink="/">
+        <span class="nav__logo-icon">&lt;/&gt;</span>
+        <span class="nav__logo-text">DevJournal</span>
+      </a>
+      <div class="nav__links">
+        <a href="#features" class="nav__link">Features</a>
+        <a href="#stats" class="nav__link">Stats</a>
+        <ui-theme-toggle />
+        <a routerLink="/login" class="nav__link nav__link--ghost">Sign In</a>
+        <a routerLink="/register" class="nav__cta">
+          <span class="nav__cta-text">Get Started</span>
+          <span class="nav__cta-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero__container">
+      <div class="hero__badge">
+        <span class="hero__badge-dot"></span>
+        <span class="hero__badge-text">Now with real-time collaboration</span>
+      </div>
+      
+      <h1 class="hero__title">
+        <span class="hero__title-line">Your developer story,</span>
+        <span class="hero__title-typed">
+          <span class="hero__title-text">{{ typedText() }}</span>
+          <span class="hero__cursor" [class.hero__cursor--hidden]="!cursorVisible()">▊</span>
+        </span>
+      </h1>
+      
+      <p class="hero__subtitle">
+        The journaling platform built for developers who ship. 
+        Document your wins, organize your knowledge, and track your growth.
+      </p>
+      
+      <div class="hero__actions">
+        <a routerLink="/register" class="hero__btn hero__btn--primary">
+          <span class="hero__btn-prompt">$</span>
+          <span class="hero__btn-text">Start Your Journey</span>
+          <span class="hero__btn-cursor">_</span>
+        </a>
+        <a href="#features" class="hero__btn hero__btn--secondary">
+          <span>Explore Features</span>
+        </a>
+      </div>
+
+      <div class="hero__terminal">
+        <div class="terminal">
+          <div class="terminal__header">
+            <div class="terminal__dots">
+              <span class="terminal__dot terminal__dot--red"></span>
+              <span class="terminal__dot terminal__dot--yellow"></span>
+              <span class="terminal__dot terminal__dot--green"></span>
+            </div>
+            <span class="terminal__title">devjournal — zsh</span>
+          </div>
+          <div class="terminal__body">
+            <div class="terminal__line">
+              <span class="terminal__prompt">~/projects</span>
+              <span class="terminal__command">devjournal init</span>
+            </div>
+            <div class="terminal__line terminal__line--output">
+              <span class="terminal__success">✓</span> Initialized DevJournal workspace
+            </div>
+            <div class="terminal__line">
+              <span class="terminal__prompt">~/projects</span>
+              <span class="terminal__command">devjournal log "Shipped new feature"</span>
+            </div>
+            <div class="terminal__line terminal__line--output">
+              <span class="terminal__success">✓</span> Entry saved 
+              <span class="terminal__highlight">• streak: 127 days</span>
+            </div>
+            <div class="terminal__line terminal__line--cursor">
+              <span class="terminal__prompt">~/projects</span>
+              <span class="terminal__blink">▊</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="features__container">
+      <div class="features__header">
+        <span class="features__label">// features</span>
+        <h2 class="features__title">Everything you need to level up</h2>
+        <p class="features__subtitle">Four powerful tools, one unified platform. Built by developers, for developers.</p>
+      </div>
+
+      <div class="features__grid">
+        <div class="features__nav">
+          @for (feature of features; track feature.title; let i = $index) {
+            <button 
+              class="features__nav-item"
+              [class.features__nav-item--active]="activeFeature() === i"
+              [attr.data-accent]="feature.accent"
+              (click)="setActiveFeature(i)"
+            >
+              <span class="features__nav-icon" [attr.data-icon]="feature.icon">
+                @switch (feature.icon) {
+                  @case ('journal') { ✎ }
+                  @case ('snippets') { ❮❯ }
+                  @case ('progress') { ◈ }
+                  @case ('chat') { ◉ }
+                }
+              </span>
+              <span class="features__nav-text">{{ feature.title }}</span>
+              <span class="features__nav-arrow">→</span>
+            </button>
+          }
+        </div>
+
+        <div class="features__display">
+          @for (feature of features; track feature.title; let i = $index) {
+            <div 
+              class="feature-card"
+              [class.feature-card--active]="activeFeature() === i"
+              [attr.data-accent]="feature.accent"
+            >
+              <div class="feature-card__header">
+                <span class="feature-card__command">{{ feature.command }}</span>
+              </div>
+              <div class="feature-card__content">
+                <h3 class="feature-card__title">{{ feature.title }}</h3>
+                <p class="feature-card__description">{{ feature.description }}</p>
+              </div>
+              <div class="feature-card__visual" [attr.data-feature]="feature.icon">
+                @switch (feature.icon) {
+                  @case ('journal') {
+                    <div class="visual-journal">
+                      <div class="visual-journal__entry">
+                        <span class="visual-journal__date">Dec 31, 2025</span>
+                        <span class="visual-journal__title">Shipped dark mode</span>
+                        <div class="visual-journal__tags">
+                          <span class="visual-journal__tag">#feature</span>
+                          <span class="visual-journal__tag">#css</span>
+                        </div>
+                      </div>
+                      <div class="visual-journal__entry visual-journal__entry--faded">
+                        <span class="visual-journal__date">Dec 30, 2025</span>
+                        <span class="visual-journal__title">Fixed auth bug</span>
+                      </div>
+                    </div>
+                  }
+                  @case ('snippets') {
+                    <div class="visual-code">
+                      <pre class="visual-code__block"><code><span class="code-keyword">const</span> <span class="code-fn">fetchUser</span> = <span class="code-keyword">async</span> (id) => &#123;
+  <span class="code-keyword">const</span> res = <span class="code-keyword">await</span> fetch(<span class="code-string">`/api/users/$&#123;id&#125;`</span>);
+  <span class="code-keyword">return</span> res.json();
+&#125;</code></pre>
+                    </div>
+                  }
+                  @case ('progress') {
+                    <div class="visual-streak">
+                      <div class="visual-streak__flames">🔥🔥🔥</div>
+                      <div class="visual-streak__count">{{ streakCount() }}</div>
+                      <div class="visual-streak__label">day streak</div>
+                      <div class="visual-streak__heatmap">
+                        @for (week of heatmapData; track $index; let wi = $index) {
+                          <div class="visual-streak__week">
+                            @for (opacity of week; track $index) {
+                              <div 
+                                class="visual-streak__day" 
+                                [style.opacity]="opacity"
+                              ></div>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                  @case ('chat') {
+                    <div class="visual-chat">
+                      <div class="visual-chat__message visual-chat__message--other">
+                        <span class="visual-chat__avatar">AS</span>
+                        <span class="visual-chat__text">Anyone solved this TypeScript issue?</span>
+                      </div>
+                      <div class="visual-chat__message visual-chat__message--self">
+                        <span class="visual-chat__text">Try using a discriminated union!</span>
+                      </div>
+                      <div class="visual-chat__typing">
+                        <span class="visual-chat__avatar">MK</span>
+                        <span class="visual-chat__dots">
+                          <span></span><span></span><span></span>
+                        </span>
+                      </div>
+                    </div>
+                  }
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats" id="stats">
+    <div class="stats__container">
+      <div class="stats__grid">
+        @for (stat of stats; track stat.label) {
+          <div class="stat">
+            <span class="stat__value">{{ stat.value }}</span>
+            <span class="stat__label">{{ stat.label }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <div class="cta__container">
+      <div class="cta__content">
+        <h2 class="cta__title">Ready to start your journal?</h2>
+        <p class="cta__subtitle">Join thousands of developers documenting their journey. Free to start, no credit card required.</p>
+        <div class="cta__actions">
+          <a routerLink="/register" class="cta__btn">
+            <span class="cta__btn-text">Create Free Account</span>
+            <span class="cta__btn-keys">
+              <kbd>⌘</kbd><kbd>K</kbd>
+            </span>
+          </a>
+        </div>
+      </div>
+      <div class="cta__decoration">
+        <div class="cta__code">
+          <span class="cta__code-line"><span class="code-comment">// Your journey starts here</span></span>
+          <span class="cta__code-line"><span class="code-keyword">import</span> &#123; success &#125; <span class="code-keyword">from</span> <span class="code-string">'devjournal'</span>;</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer__container">
+      <div class="footer__brand">
+        <span class="footer__logo">&lt;/&gt; DevJournal</span>
+        <span class="footer__tagline">Built with ♥ for developers</span>
+      </div>
+      <div class="footer__links">
+        <a href="#" class="footer__link">GitHub</a>
+        <a href="#" class="footer__link">Twitter</a>
+        <a href="#" class="footer__link">Discord</a>
+      </div>
+      <div class="footer__copy">
+        © 2025 DevJournal. All rights reserved.
+      </div>
+    </div>
+  </footer>
+</div>

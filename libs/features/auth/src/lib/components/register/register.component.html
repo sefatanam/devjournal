@@ -1,0 +1,117 @@
+<div class="register-container">
+  <div class="register-card">
+    <h1 class="register-title">Create Account</h1>
+    <p class="register-subtitle">Join DevJournal to start your learning journey</p>
+
+    @if (authStore.error()) {
+      <div class="error-alert">
+        {{ authStore.error() }}
+        <button type="button" class="close-btn" (click)="authStore.clearError()">
+          &times;
+        </button>
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="register-form">
+      <div class="form-group">
+        <label for="displayName" class="form-label">Display Name</label>
+        <input
+          type="text"
+          id="displayName"
+          formControlName="displayName"
+          class="form-input"
+          [class.error]="form.get('displayName')?.invalid && form.get('displayName')?.touched"
+          placeholder="Enter your name"
+          autocomplete="name"
+        />
+        @if (form.get('displayName')?.invalid && form.get('displayName')?.touched) {
+          <span class="error-text">{{ displayNameError }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="form-label">Email</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-input"
+          [class.error]="form.get('email')?.invalid && form.get('email')?.touched"
+          placeholder="Enter your email"
+          autocomplete="email"
+        />
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <span class="error-text">{{ emailError }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <div class="password-input-wrapper">
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            class="form-input"
+            [class.error]="form.get('password')?.invalid && form.get('password')?.touched"
+            placeholder="Create a password"
+            autocomplete="new-password"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="togglePasswordVisibility()"
+          >
+            {{ showPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        @if (form.get('password')?.invalid && form.get('password')?.touched) {
+          <span class="error-text">{{ passwordError }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <div class="password-input-wrapper">
+          <input
+            [type]="showConfirmPassword() ? 'text' : 'password'"
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            class="form-input"
+            [class.error]="form.get('confirmPassword')?.invalid && form.get('confirmPassword')?.touched"
+            placeholder="Confirm your password"
+            autocomplete="new-password"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="toggleConfirmPasswordVisibility()"
+          >
+            {{ showConfirmPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        @if (form.get('confirmPassword')?.invalid && form.get('confirmPassword')?.touched) {
+          <span class="error-text">{{ confirmPasswordError }}</span>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="submit-btn"
+        [disabled]="authStore.isLoading()"
+      >
+        @if (authStore.isLoading()) {
+          <span class="spinner"></span>
+          Creating account...
+        } @else {
+          Create Account
+        }
+      </button>
+    </form>
+
+    <p class="login-link">
+      Already have an account?
+      <a routerLink="/login">Sign in</a>
+    </p>
+  </div>
+</div>

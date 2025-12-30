@@ -1,0 +1,40 @@
+<div class="dashboard-container">
+  <main class="dashboard-main">
+    <section class="welcome-section">
+      <h2>Welcome back, {{ authStore.userDisplayName() }}!</h2>
+      <p class="welcome-text">
+        Your learning journey continues. What will you accomplish today?
+      </p>
+    </section>
+
+    <div class="dashboard-grid">
+      <a routerLink="/journal" class="dashboard-card clickable">
+        <div class="card-icon">✎</div>
+        <h3>Journal</h3>
+        <p>Document your daily progress and insights</p>
+        <span class="card-action">Open →</span>
+      </a>
+
+      <a routerLink="/snippets" class="dashboard-card clickable">
+        <div class="card-icon">❮❯</div>
+        <h3>Snippets</h3>
+        <p>Save and organize your code library</p>
+        <span class="card-action">Open →</span>
+      </a>
+
+      <a routerLink="/progress" class="dashboard-card clickable">
+        <div class="card-icon">◈</div>
+        <h3>Progress</h3>
+        <p>Track streaks and visualize growth</p>
+        <span class="card-action">View →</span>
+      </a>
+
+      <a routerLink="/chat" class="dashboard-card clickable">
+        <div class="card-icon">◉</div>
+        <h3>Chat</h3>
+        <p>Connect with other developers</p>
+        <span class="card-action">Join →</span>
+      </a>
+    </div>
+  </main>
+</div>

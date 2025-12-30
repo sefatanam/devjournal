@@ -1,101 +1,334 @@
-# Devjournal
+# DevJournal - Polyglot Learning Platform
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A full-stack learning journal application designed to teach Angular 21 + Go backend development patterns. Built for studying modern web development practices and preparing for intermediate/senior developer interviews.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Technology Stack
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Frontend** | Angular 21 + Signal Store | Modern reactive UI with signals |
+| **Backend** | Go (Golang) | High-performance API server |
+| **API Protocols** | REST/JSON + gRPC + Protobuf | Multiple API patterns |
+| **Real-time** | WebSocket (gorilla/websocket) | Live chat functionality |
+| **Primary DB** | PostgreSQL (raw SQL with pgx) | Relational data storage |
+| **Secondary DB** | MongoDB | Flexible document storage |
+| **Monorepo** | Nx Workspace | Project management |
+| **Deployment** | Docker + Docker Compose | Containerization |
 
-## Run tasks
+## Project Structure
 
-To run the dev server for your app, use:
+```
+devjournal/
+├── apps/
+│   └── web/                    # Angular 21 frontend
+├── libs/
+│   ├── shared/
+│   │   ├── ui/                 # Reusable UI components
+│   │   ├── util/               # Utilities
+│   │   └── models/             # TypeScript interfaces
+│   ├── features/
+│   │   ├── auth/               # Authentication feature
+│   │   ├── journal/            # Journal entries feature
+│   │   ├── snippets/           # Code snippets feature
+│   │   ├── chat/               # Real-time chat feature
+│   │   └── progress/           # Progress tracking feature
+│   └── data-access/
+│       └── api/                # HTTP/gRPC clients
+├── services/
+│   └── go-api/                 # Go backend service
+│       ├── cmd/api/            # Entry point
+│       ├── internal/           # Private packages
+│       │   ├── config/         # Configuration
+│       │   ├── handler/        # HTTP/gRPC/WebSocket handlers
+│       │   ├── middleware/     # Auth, CORS, logging
+│       │   ├── repository/     # PostgreSQL & MongoDB repos
+│       │   ├── service/        # Business logic
+│       │   └── domain/         # Domain models
+│       └── pkg/                # Public utilities
+├── proto/                      # Protobuf definitions
+│   └── devjournal/v1/
+├── docker/                     # Docker configuration
+└── docs/                       # Documentation
+```
 
-```sh
+## Quick Start
+
+### Prerequisites
+
+- **Node.js** >= 20.x
+- **Go** >= 1.21
+- **Docker** and Docker Compose
+- **protoc** (Protocol Buffers compiler)
+- **buf** CLI (for proto generation)
+
+### 1. Clone and Install
+
+```bash
+# Clone the repository
+git clone <repo-url>
+cd devjournal
+
+# Install Node.js dependencies
+npm install
+
+# Install Go dependencies
+cd services/go-api
+go mod download
+cd ../..
+```
+
+### 2. Start Databases (Docker)
+
+```bash
+# Start PostgreSQL and MongoDB
+docker-compose -f docker/docker-compose.dev.yml up -d
+
+# Verify containers are running
+docker ps
+```
+
+### 3. Run Database Migrations
+
+The migrations run automatically when PostgreSQL starts. To run manually:
+
+```bash
+# Connect to PostgreSQL
+docker exec -it devjournal-postgres psql -U devjournal -d devjournal
+
+# Run migration files (if needed)
+\i /docker-entrypoint-initdb.d/001_create_users.sql
+```
+
+### 4. Start the Backend
+
+```bash
+# From project root
+cd services/go-api
+go run ./cmd/api/main.go
+
+# Or using Nx
+npx nx serve go-api
+```
+
+The API will be available at:
+- HTTP: http://localhost:8080
+- gRPC: http://localhost:8081
+- Health check: http://localhost:8080/health
+
+### 5. Start the Frontend
+
+```bash
+# From project root
 npx nx serve web
+
+# Or with specific port
+npx ng serve --port 4200
 ```
 
-To create a production bundle:
+Open http://localhost:4200 in your browser.
 
-```sh
-npx nx build web
+## Development Commands
+
+### Nx Commands
+
+```bash
+# Serve Angular frontend
+npx nx serve web
+
+# Build Angular for production
+npx nx build web --configuration=production
+
+# Run tests
+npx nx test web
+npx nx test go-api
+
+# Lint code
+npx nx lint web
+npx nx lint go-api
+
+# Generate Angular library
+npx nx g @nx/angular:library my-lib --directory=libs/shared/my-lib
+
+# Generate Angular component
+npx nx g @nx/angular:component my-component --project=feature-auth
 ```
 
-To see all available targets to run for a project, run:
+### Go Commands
 
-```sh
+```bash
+# Run Go server
+cd services/go-api
+go run ./cmd/api/main.go
+
+# Build Go binary
+go build -o dist/server ./cmd/api
+
+# Run tests
+go test -v ./...
+
+# Run with race detector
+go run -race ./cmd/api/main.go
+```
+
+### Docker Commands
+
+```bash
+# Development (databases only)
+docker-compose -f docker/docker-compose.dev.yml up -d
+
+# Full stack
+docker-compose -f docker/docker-compose.yml up -d
+
+# View logs
+docker-compose -f docker/docker-compose.dev.yml logs -f
+
+# Stop containers
+docker-compose -f docker/docker-compose.dev.yml down
+
+# Stop and remove volumes
+docker-compose -f docker/docker-compose.dev.yml down -v
+```
+
+### Protobuf Generation
+
+```bash
+# Install buf CLI (macOS)
+brew install bufbuild/buf/buf
+
+# Generate code
+cd proto
+buf generate
+
+# Lint proto files
+buf lint
+
+# Check for breaking changes
+buf breaking --against '.git#branch=main'
+```
+
+## API Endpoints
+
+### REST API (HTTP)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/auth/register | Register new user |
+| POST | /api/auth/login | Login user |
+| GET | /api/entries | List journal entries |
+| POST | /api/entries | Create journal entry |
+| GET | /api/entries/:id | Get journal entry |
+| PUT | /api/entries/:id | Update journal entry |
+| DELETE | /api/entries/:id | Delete journal entry |
+| GET | /api/snippets | List code snippets |
+| POST | /api/snippets | Create code snippet |
+| GET | /api/snippets/:id | Get code snippet |
+| PUT | /api/snippets/:id | Update code snippet |
+| DELETE | /api/snippets/:id | Delete code snippet |
+
+### WebSocket
+
+```
+ws://localhost:8080/ws/chat/{room}
+```
+
+### gRPC Services
+
+- `JournalService` - CRUD operations for journal entries
+- `SnippetService` - CRUD operations for code snippets
+- `AuthService` - User authentication
+- `ProgressService` - Learning progress tracking
+
+## Database Schemas
+
+### PostgreSQL Tables
+
+- `users` - User accounts
+- `journal_entries` - Learning journal entries
+- `learning_progress` - Daily progress tracking
+- `study_groups` - Chat room groups
+- `study_group_members` - Group membership
+
+### MongoDB Collections
+
+- `snippets` - Code snippets with flexible metadata
+
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| HTTP_PORT | 8080 | HTTP server port |
+| GRPC_PORT | 8081 | gRPC server port |
+| POSTGRES_URL | - | PostgreSQL connection string |
+| MONGO_URL | - | MongoDB connection string |
+| MONGO_DB | devjournal | MongoDB database name |
+| JWT_SECRET | - | JWT signing secret |
+| ENVIRONMENT | development | Runtime environment |
+
+## Key Learning Patterns
+
+### Go Backend Patterns
+
+1. **Clean Architecture** - cmd/internal/pkg structure
+2. **Repository Pattern** - Raw SQL with pgx (no ORM)
+3. **Service Layer** - Business logic separation
+4. **Middleware Chain** - Auth, CORS, logging, recovery
+5. **WebSocket Hub** - Concurrent connection management
+6. **gRPC Server** - Protobuf-based RPC
+
+### Angular Frontend Patterns
+
+1. **Signal Store** - @ngrx/signals for state management
+2. **Standalone Components** - Modern Angular architecture
+3. **Modern Control Flow** - @if, @for, @switch
+4. **Functional Guards** - Route protection
+5. **HTTP Interceptors** - Token injection
+6. **WebSocket Integration** - RxJS webSocket
+
+### Database Patterns
+
+1. **Raw SQL** - No ORM, explicit queries
+2. **Migrations** - Version-controlled schema
+3. **Connection Pooling** - pgxpool for PostgreSQL
+4. **Flexible Schema** - MongoDB for varied content
+
+## Implementation Phases
+
+1. **Phase 1** - Project Foundation (Nx, Go skeleton, Docker) ✅
+2. **Phase 2** - Authentication System (JWT, guards)
+3. **Phase 3** - Journal Entries (REST CRUD)
+4. **Phase 4** - Code Snippets (MongoDB)
+5. **Phase 5** - gRPC Integration
+6. **Phase 6** - Real-time Chat (WebSocket)
+7. **Phase 7** - Progress Tracking
+8. **Phase 8** - Polish & Documentation
+
+## Nx Workspace
+
+This project uses [Nx](https://nx.dev) for monorepo management.
+
+```bash
+# Show project graph
+npx nx graph
+
+# Show available targets for a project
 npx nx show project web
+
+# Run affected tests only
+npx nx affected -t test
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+## Contributing
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
-## Add new projects
+## License
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+MIT License - feel free to use this project for learning purposes.
 
-Use the plugin's generator to create new projects.
+---
 
-To generate a new application, use:
-
-```sh
-npx nx g @nx/angular:app demo
-```
-
-To generate a new library, use:
-
-```sh
-npx nx g @nx/angular:lib mylib
-```
-
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
-
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
-```
-
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Built with care for developers learning full-stack development.
