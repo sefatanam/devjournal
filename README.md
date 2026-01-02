@@ -2,6 +2,7 @@
 
 A full-stack learning journal application designed to teach Angular 21 + Go backend development patterns. Built for studying modern web development practices and preparing for intermediate/senior developer interviews.
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/devjournal?referralCode=rso6FB&utm_medium=integration&utm_source=template&utm_campaign=generic)
 ## Technology Stack
 
 | Layer | Technology | Purpose |
